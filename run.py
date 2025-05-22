@@ -1,16 +1,25 @@
-import uvicorn
+"""
+Alternative entry point for the ML Engineer Portfolio application.
+This file provides more configuration options and can be used for production deployment.
+"""
 import os
-from dotenv import load_dotenv
+import uvicorn
+from app.core.config import config
 
-# Load environment variables from .env file
-load_dotenv()
+def run_app():
+    """Run the application using uvicorn directly."""
+    # Get port from environment or use default
+    port = int(os.getenv("PORT", config.port))
+    host = os.getenv("HOST", config.host)
+    
+    # Run with uvicorn
+    uvicorn.run(
+        "main:app",
+        host=host,
+        port=port,
+        reload=config.debug,
+        log_level="info" if not config.debug else "debug"
+    )
 
 if __name__ == "__main__":
-    # Get host and port from environment variables or use defaults
-    host = os.getenv("APP_HOST", "0.0.0.0")
-    port = int(os.getenv("APP_PORT", "8000"))
-    reload = os.getenv("APP_RELOAD", "true").lower() == "true"
-
-    # Run the FastAPI app using Uvicorn
-    # 'app:app' refers to the 'app' instance in the 'app' module (app/__init__.py)
-    uvicorn.run("app:app", host=host, port=port, reload=reload)
+    run_app()
